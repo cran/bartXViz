@@ -9,7 +9,7 @@ A dataset used for modeling support for gay marriage in the United States,
 combining individual- and state-level covariates from a 2006 survey.
 
 \itemize{
-\item \emph{Y} A data frame with 5000 rows and 11 variables: 
+\item A data frame with 5000 rows and 11 variables: 
   \describe{
   \item{id}{Unique observation identifier}
   \item{state}{Two-letter abbreviation for U.S. state}

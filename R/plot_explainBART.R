@@ -1,28 +1,28 @@
 #' A function for visualizing the Shapley values of BART models
 #'
-#' The `plot.ExplainBART` function provides various visualization methods for Shapley values. 
-#' It is designed to visualize `ExplainBART` class objects, which contain Shapley values computed from models estimated using the `bart` function from the `dbarts`or the `wbart`/`gbart` functions from `BART`.
+#' The \code{plot.ExplainBART} function provides various visualization methods for Shapley values. 
+#' It is designed to visualize \code{ExplainBART} class objects, which contain Shapley values computed from models estimated using the \code{bart} function from the \pkg{dbarts} or the \code{wbart}/\code{gbart} functions from \pkg{BART}.
 #' The values and format used in the graph are determined based on the input parameters.
 #'
-#' @param x An `ExplainBART` class object containing the Shapley values of the BART model.
-#' @param average  Input the reference value for calculating the mean of the object's `phi` list.
-#' `"obs"` representsabind the average based on observations (#post by #variable),
-#' while `"post"` represents the average based on posterior samples (#obs by #variable).
-#' If `"both"` is entered, calculations are performed based on both observation and posterior sample criteria.
-#' @param title The title of the plot, with a default value of `NULL`.
-#' @param type `"bar"` represents a bar chart that includes the average contribution of each variable,
-#'  while `"bee"` represents a summary plot, allowing you to determine the graph's format.
+#' @param x An \code{ExplainBART} class object containing the Shapley values of the BART model.
+#' @param average  Input the reference value for calculating the mean of the object's \code{phi} list.
+#' \code{"obs"} represents abind the average based on observations (#post by #variable),
+#' while \code{"post"} represents the average based on posterior samples (#obs by #variable).
+#' If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.
+#' @param title The title of the plot, with a default value of \code{NULL}.
+#' @param type \code{"bar"} represents a bar chart that includes the average contribution of each variable,
+#'  while \code{"bee"} represents a summary plot, allowing you to determine the graph's format.
 #' @param num_post To check the contribution of variables for a single posterior sample,
 #'  enter a value within the number of posterior samples.
-#' @param adjust The default value is `FALSE`.
-#' Enter `TRUE` to check the Shapley values adjusted based on the model's average contribution.
-#' @param plot.flag If `average = "obs"`, the quantile interval of each variable's is provided by default.
-#' @param probs Enter the probability for the quantile interval. The default value is `0.95`.
+#' @param adjust The default value is \code{FALSE}.
+#' Enter \code{TRUE} to check the Shapley values adjusted based on the model's average contribution.
+#' @param plot.flag If \code{average = "obs"}, the quantile interval of each variable's is provided by default.
+#' @param probs Enter the probability for the quantile interval. The default value is \code{0.95}.
 #' @param ... Additional arguments to be passed
 #' @return The plot is returned based on the specified option.: 
-#' \item{out}{If average is `"obs"` or `"post"`, a bar plot or summary plot is generated based on the selected averaging criterion. If average is `"both"`, a boxplot is displayed to
-#'show the distribution of Shapley values computed using both criteria. If adjust is `TRUE`, the adjusted Shapley values are displayed.
-#' If `num_post `is specified, a bar plot or summary plot for the selected posterior sample is generated.}
+#' \item{out}{If average is \code{"obs"} or \code{"post"}, a bar plot or summary plot is generated based on the selected averaging criterion. If average is `"both"`, a boxplot is displayed to
+#'show the distribution of Shapley values computed using both criteria. If adjust is \code{TRUE}, the adjusted Shapley values are displayed.
+#' If \code{num_post} is specified, a bar plot or summary plot for the selected posterior sample is generated.}
 #' @examples
 #' \donttest{
 #' ## Friedman data
@@ -75,8 +75,9 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
   factor_names <- object$factor_names
 
   length_cate <- NULL
+  
   for (i in  factor_names ){
-     if(length(which(str_detect(feature_names,i))) > 1  ){
+     if(length(which(str_detect(feature_names,i))) >= 1  ){
        length_cate <- c(  length_cate , feature_names[which(str_detect(feature_names,i))] )
      }
   }
@@ -126,7 +127,7 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
 
       out <- bar_plot (Local_mean,probs = NULL, plot.flag = FALSE , title  )
 
-      ymin <- (- diff(range(out$coordinates$limits$y)) * 0.02)
+      ymin <- (- diff(range(out$coordinates$limits$y,na.rm = TRUE)) * 0.02)
 
       out <- out +
         annotate("text",x= sample_summary$variable, y =  ymin,
@@ -210,7 +211,7 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
         sample_summary$ percent <- paste0(sprintf("%.1f", round(sample_summary$zero/sample_summary$n*100, 1)) ,"%")
 
         out <- bar_plot (Local_mean, probs = NULL, plot.flag = FALSE,title  )
-        ymin <- (- diff(range(out$coordinates$limits$y)) * 0.02)
+        ymin <- (- diff(range(out$coordinates$limits$y,na.rm = TRUE)) * 0.02)
 
         out <- out +
          annotate("text",x= sample_summary$variable, y =  ymin,
@@ -265,7 +266,7 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
 
         sample_summary$ percent <- paste0(sprintf("%.1f", round( sample_summary$zero/  sample_summary$n*100, 1)) ,"%")
 
-         ymin <- (- diff(range(out$coordinates$limits$y)) * 0.02)
+         ymin <- (- diff(range(out$coordinates$limits$y,na.rm = TRUE)) * 0.02)
 
 
          annotate_figure(out +  annotate("text",x= sample_summary$variable, y =  ymin,
@@ -339,7 +340,7 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
     if ( is.null (type) | isTRUE(type == "bees")) {
 
       ymax <- max (data_list $ total_long$value, na.rm = TRUE) * (1+0.001)
-      ymin <- (- diff(range(data_list $ total_long$value))*0.05)
+      ymin <- (- diff(range(data_list $ total_long$value, na.rm = TRUE))*0.05)
 
       left_p <-  data_list $ total_long%>% filter (is.na (value)==FALSE & Average_re=="Observation")%>%
         ggplot(  aes(x= variable, y=value, fill= Average_re )) +
@@ -373,7 +374,7 @@ plot.ExplainBART <- function(x, average = NULL, type = NULL,  num_post= NULL,
         theme(legend.position =  c(0.8, 0.2), legend.background=element_blank()) + ylim(ymin, ymax )
 
       right_p <- right_p + annotate("text",x= sample_summary$variable,
-                                  y = - diff(range(data_list $ total_long$value))*0.02 ,
+                                  y = - diff(range(data_list $ total_long$value,na.rm = TRUE))*0.02 ,
                                   hjust = 1, label = sample_summary$percent , size = 2.5)
 
 

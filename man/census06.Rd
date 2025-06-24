@@ -8,7 +8,7 @@ Census-based Population Proportions for Covariate Bins (2006)
 The data frame has the following components:
 
 \itemize{
-\item \emph{Y} This dataset provides population counts in covariate bins based on the 2006 U.S. Census,
+\item  This dataset provides population counts in covariate bins based on the 2006 U.S. Census,
 Each row represents a unique combination of demographic covariates within a state. 
 A data frame with 2940 rows and 9 variables:
   \describe{

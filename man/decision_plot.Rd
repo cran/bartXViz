@@ -25,14 +25,14 @@ and results obtained using the Explain function.}
 
 \item{geo.id}{Enter a single value of the stratum variable as a character.}
 
-\item{bar_default}{bar_default is an option for adjusting the legend's color scale to fit the window length, and its default value is set to TRUE. 
-If plots fail to render in LaTeX documents, it is recommended to set this option to FALSE.}
+\item{bar_default}{\code{bar_default} is an option for adjusting the legend's color scale to fit the window length, and its default value is set to \code{TRUE}. 
+If plots fail to render in LaTeX documents, it is recommended to set this option to \code{FALSE}.}
 }
 \value{
-\item{plot_out}{The decision plot for one or multiple observations specified in `obs_num`.}
+\item{plot_out}{The decision plot for one or multiple observations specified in \code{obs_num}.}
 }
 \description{
-The decision_plot function is a graph that visualizes how individual features
+The \code{decision_plot} function is a graph that visualizes how individual features
 contribute to a model's prediction for a specific observation using Shapley values.
  It can be used to visualize one or multiple observations.
 }

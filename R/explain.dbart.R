@@ -1,29 +1,29 @@
-#' Approximate Shapley values computed from a BART model fitted using `bart`
+#' Approximate Shapley values computed from a BART model fitted using \code{bart}
 #'
 #' `Explain.bart` function is used to calculate the contribution of each variable
 #' in the Bayesian Additive Regression Trees (BART) model using permutation.
-#' It is used to compute the Shapley values of models estimated using the `bart` function from the `dbarts`.
+#' It is used to compute the Shapley values of models estimated using the \code{bart} function from the \code{dbarts}.
 #'
 #' @param object A BART model (Bayesian Additive Regression Tree) estimated
-#' using the `bart` function from the `dbarts` library.
+#' using the \code{bart} function from the \pkg{dbarts}.
 #' @param feature_names The name of the variable for which you want to check the contribution.
-#' The default value is set to `NULL`, which means the contribution of all variables in `X` will be calculated.
+#' The default value is set to \code{NULL}, which means the contribution of all variables in \code{X} will be calculated.
 #' @param X The dataset containing all independent variables used as input when estimating the BART model.
-#' @param nsim The number of Monte Carlo sampling iterations, which is fixed at `1` by default
+#' @param nsim The number of Monte Carlo sampling iterations, which is fixed at \code{1} by default
 #' in the case of the BART model.
 #' @param pred_wrapper A function used to estimate the predicted values of the model.
 #' @param newdata New data containing the variables included in the model.
 #' This is used when checking the contribution of newly input data using the model.
-#' The default value is set to `NULL`, meaning that the input `X` data,
+#' The default value is set to \code{NULL}, meaning that the input \code{X} data,
 #' i.e., the data used for model estimation, will be used by default.
-#' @param parallel The default value is set to `FALSE`, but it can be changed to `TRUE` for parallel computation.
+#' @param parallel The default value is set to \code{FALSE}, but it can be changed to \code{TRUE} for parallel computation.
 #' @param ... Additional arguments to be passed
-#' @return Returns of class `ExplainBART` with consisting of a list with the following components:
+#' @return Returns of class \code{ExplainBART} with consisting of a list with the following components:
 #' \item{phis}{A list containing the Shapley values for each variable.}
 #' \item{newdata}{The data used to check the contribution of variables. If a variable has categories, categorical variables are one-hot encoded.}
 #' \item{fnull}{The expected value of the model's predictions.}
 #' \item{fx}{The prediction value for each observation.}
-#' \item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to NULL.}
+#' \item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 #' @export
 #' @examples
 #' \donttest{
@@ -96,10 +96,21 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
 
 
   featurenames <- names(as.data.frame(makeModelMatrixFromDataFrame (newdata)))
+  
+  count_matches <- sapply(feature_names, function(fn) {
+    sum(startsWith(featurenames, fn))
+  })
+  
+  
+  tmp_var <- data.frame(
+    var = names(count_matches),
+    n = as.integer(count_matches),
+    row.names = NULL
+  )
 
 
   if (( sum(sapply(newdata, is.factor)) > 0 | sum(sapply(newdata, is.character)) > 0) &
-      length(which(stringr::str_detect( featurenames, '[0-9]$' ))) >= 1 ) {
+      sum( tmp_var $ n  >=2) >= 1 ) {
 
     factor_names <- names(X) [which( ( names(X) %in% featurenames  ) ==FALSE)]
 
@@ -107,15 +118,29 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
       
       ind <- featurenames[i]
       phi_idx <- which( stringr::str_detect( ind , feature_names ))
-      value_factor <-  tail(unlist( strsplit(ind, split = "[.]")),1)
-       temp <- matrix (0, nrow = dim (newdata)[1],ncol= dim(object $ yhat.train) [1] )
+      
+      temp_var <- NULL
+      value_factor <- NULL
+      
+      if( tmp_var$n[tmp_var$ var ==   feature_names[ phi_idx]] >=  2 ){
+        value_factor <-  tail(unlist(strsplit( ind , split = "\\.")),1)
+        temp_var <- stringr::str_replace (  ind , paste0("\\.",value_factor),"")
+      }
+      
+        temp <- matrix (0, nrow = dim (newdata)[1],ncol= dim(object $ yhat.train) [1] )
        
-       if(length(which(str_detect(ind , feature_names))) > 2) {
-
+       if( is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) >  2 ) {
+ 
          temp [which(newdata[,phi_idx ]==value_factor),] <- phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  value_factor),]
          temp
+       }  else  if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) == 2) {
+         
+         temp [which(newdata[,phi_idx ]==1),]  <-
+           phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  1),]
+         temp
+         
        } else {
-         temp <- phis_temp[[i]]
+         temp <- phis_temp[[ phi_idx]]
          temp
        }
 

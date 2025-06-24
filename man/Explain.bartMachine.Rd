@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_bartMachine.R
 \name{Explain.bartMachine}
 \alias{Explain.bartMachine}
-\title{Approximate Shapley values computed from a BART model fitted using `bartMachine`}
+\title{Approximate Shapley values computed from a BART model fitted using \code{bartMachine}}
 \usage{
 \method{Explain}{bartMachine}(
   object,
@@ -17,40 +17,40 @@
 }
 \arguments{
 \item{object}{A BART model (Bayesian Additive Regression Tree) estimated
-using the `bartMachine` function from the `bartMachine`.}
+using the \code{bartMachine} function from the \pkg{bartMachine}.}
 
 \item{feature_names}{The name of the variable for which you want to check the contribution.
-The default value is set to `NULL`, which means the contribution of all variables in `X` will be calculated.}
+The default value is set to \code{NULL}, which means the contribution of all variables in \code{X} will be calculated.}
 
 \item{X}{The dataset containing all independent variables used as input when estimating the BART model. Categorical or character variables must not contain an underscore ("_") in their values or labels.}
 
-\item{nsim}{The number of Monte Carlo repetitions used for estimating each Shapley value is set to `1` by default for the BART model.}
+\item{nsim}{The number of Monte Carlo repetitions used for estimating each Shapley value is set to \code{1} by default for the BART model.}
 
 \item{pred_wrapper}{A function used to estimate the predicted values of the model.}
 
 \item{newdata}{New data containing the variables included in the model.
 This is used when checking the contribution of newly input data using the model.
-The default value is set to `NULL`, meaning that the input `X` data,
+The default value is set to \code{NULL}, meaning that the input \code{X} data,
 i.e., the data used for model estimation, will be used by default.}
 
-\item{parallel}{The default value is set to `FALSE`,
-but it can be changed to `TRUE` for parallel computation.}
+\item{parallel}{The default value is set to \code{FALSE},
+but it can be changed to \code{TRUE} for parallel computation.}
 
 \item{...}{Additional arguments to be passed}
 }
 \value{
-An object of class `ExplainbartMachine` with the following components :
+An object of class \code{ExplainbartMachine} with the following components :
 \item{phis}{A list containing the Shapley values for each variable.}
 \item{newdata}{The data used to check the contribution of variables. If a variable has categories, categorical variables are one-hot encoded.}
 \item{fnull}{The expected value of the model's predictions.}
 \item{fx}{The prediction value for each observation.}
-\item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to NULL.}
+\item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 }
 \description{
 This function is used to calculate the contribution of each variable
 in the Bayesian Additive Regression Trees (BART) model using permutation.
 It is used to compute the Shapley values of models estimated 
-using the `bartMachine` function from the `bartMachine`.
+using the \code{bartMachine} function from the \pkg{bartMachine}.
 }
 \examples{
 \donttest{

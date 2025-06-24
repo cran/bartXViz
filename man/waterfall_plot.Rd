@@ -4,7 +4,14 @@
 \alias{waterfall_plot}
 \title{Waterfall plot}
 \usage{
-waterfall_plot(object, obs_num, title = NULL, geo.unit = NULL, geo.id = NULL)
+waterfall_plot(
+  object,
+  obs_num,
+  title = NULL,
+  geo.unit = NULL,
+  geo.id = NULL,
+  obs_name = NULL
+)
 }
 \arguments{
 \item{object}{Enter the name of the object that contains the model's contributions
@@ -17,13 +24,15 @@ and results obtained using the Explain function.}
 \item{geo.unit}{The name of the stratum variable in the BARP model as a character.}
 
 \item{geo.id}{Enter a single value of the stratum variable as a character.}
+
+\item{obs_name}{Enter the name of the vector containing observation IDs or names.}
 }
 \value{
 The function returns a waterfall plot.
-\item{plot_out}{The waterfall plot of the observation at index `obs_num`.}
+\item{plot_out}{The waterfall plot of the observation at index \code{obs_num}.}
 }
 \description{
-The `waterfall_plot` function is a bar chart that displays the positive and
+The \code{waterfall_plot} function is a bar chart that displays the positive and
 negative contributions across sequential data points, visualizing how each
 variable's contributions change for a single observation.
 }

@@ -33,7 +33,7 @@ barps(
 
 \item{geo.unit}{The column name corresponding to the unit at which outcomes should be aggregated.}
 
-\item{algorithm}{Algorithm for predicting opinions. Can be any algorithm(s) included in the \code{SuperLearner} package. If multiple algorithms are listed, predicted opinions are provided for each separately, as well as for the weighted ensemble. Defaults to \code{BARP} which implements Bayesian Additive Regression Trees via \code{bartMachine}.}
+\item{algorithm}{Algorithm for predicting opinions. Can be any algorithm(s) included in the \pkg{SuperLearner} package. If multiple algorithms are listed, predicted opinions are provided for each separately, as well as for the weighted ensemble. Defaults to \code{BARP} which implements Bayesian Additive Regression Trees via \code{bartMachine}.}
 
 \item{setSeed}{Seed to control random number generation.}
 
@@ -50,7 +50,7 @@ barps(
 \value{
 Returns an object of class `BARP`, containing a list of the following components:
 \item{pred.opn}{A \code{data.frame} where each row corresponds to the geographic unit of interest and the columns summarize the predicted outcome and the upper and lower bounds for the given credible interval (\code{cred_int}).}
-\item{trees}{A \code{bartMachine} object. See [bartMachine](https://cran.r-project.org/web/packages/bartMachine/index.html) for details.}
+\item{trees}{A \code{bartMachine} object.} 
 \item{risk}{A \code{data.frame} containing the cross-validation risk for each algorithm and the associated weight used in the ensemble predictions. Only useful when multiple algorithms are used.}
 \item{barp.dat}{Data containing the estimates and credible intervals for each observation in the input census dataset.}
 \item{setSeed}{The random seed value employed during model estimation using bartMachine.}
@@ -59,10 +59,12 @@ Returns an object of class `BARP`, containing a list of the following components
 }
 \description{
 This function uses Bayesian Additive Regression Trees (BART) to extrapolate survey data to a level of geographic aggregation at which the original survey was not sampled to be representative of.
-This is a modified version of the `barp` function from the [BARP](https://github.com/jbisbee1/BARP) package to allow for seed fixation.
+This is a modified version of the \code{barp} function from the \pkg{BARP} to allow for seed fixation.(\url{https://github.com/jbisbee1/BARP})
 }
 \seealso{
-[bartMachine](https://cran.r-project.org/web/packages/bartMachine/index.html) which this program uses to implement Bayesian Additive Regression Trees.
+\code{barps} is used to implement Bayesian Additive Regression Trees based on the \pkg{bartMachine} package. 
+For detailed options, see \url{https://CRAN.R-project.org/package=bartMachine}.
 
-[SuperLearner](https://cran.r-project.org/web/packages/SuperLearner/index.html) which this program uses to implement alternative regularizers.
+\code{barps} also uses the \pkg{SuperLearner} package to implement alternative regularizers. 
+For more details, see \url{https://CRAN.R-project.org/package=SuperLearner}.
 }

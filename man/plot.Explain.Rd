@@ -17,37 +17,37 @@
 )
 }
 \arguments{
-\item{x}{An `Explain` class object containing the Shapley values of models.}
+\item{x}{An \code{Explain} class object containing the Shapley values of models.}
 
-\item{average}{Input the reference value for calculating the mean of the object's `phi` list.
-`"obs"` represents the average based on observations (#post by #variable),
-while `"post"` represents the average based on posterior samples (#obs by #variable).
-If `"both"` is entered, calculations are performed based on both observation and posterior sample criteria.}
+\item{average}{Input the reference value for calculating the mean of the object's \code{phi} list.
+\code{"obs"} represents the average based on observations (#post by #variable),
+while \code{"post"} represents the average based on posterior samples (#obs by #variable).
+If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.}
 
-\item{type}{`"bar"` represents a bar chart that includes the average contribution of each variable,
-while `"bee"` represents a summary plot, allowing you to determine the graph's format.}
+\item{type}{\code{"bar"} represents a bar chart that includes the average contribution of each variable,
+while \code{"bee"} represents a summary plot, allowing you to determine the graph's format.}
 
 \item{num_post}{To check the contribution of variables for a single posterior sample,
 enter a value within the number of posterior samples.}
 
-\item{plot.flag}{If `average = "obs"`, the quantile interval of each variable's is provided by default.}
+\item{plot.flag}{If \code{average = "obs"}, the quantile interval of each variable's is provided by default.}
 
-\item{adjust}{The default value is `FALSE`.
-Enter `TRUE` to check the Shapley values adjusted based on the model's average contribution.}
+\item{adjust}{The default value is \code{FALSE}.
+Enter \code{TRUE} to check the Shapley values adjusted based on the model's average contribution.}
 
-\item{probs}{Enter the probability for the quantile interval. The default value is `0.95`.}
+\item{probs}{Enter the probability for the quantile interval. The default value is \code{0.95}.}
 
-\item{title}{The title of the plot, with a default value of `NULL`.}
+\item{title}{The title of the plot, with a default value of \code{NULL}.}
 
 \item{...}{Additional arguments to be passed}
 }
 \value{
 The plot is returned based on the specified option.: 
-\item{out}{If average is `"obs"` or `"post"`, a bar plot or summary plot is generated based on the selected averaging criterion. If average is `"both"`, a boxplot is displayed to
-show the distribution of Shapley values computed using both criteria. If adjust is `TRUE`, the adjusted Shapley values are displayed.
-If `num_post `is specified, a bar plot or summary plot for the selected posterior sample is generated.}
+\item{out}{If average is \code{"obs"} or \code{"post"}, a bar plot or summary plot is generated based on the selected averaging criterion. If average is \code{"both"}, a boxplot is displayed to
+show the distribution of Shapley values computed using both criteria. If adjust is \code{TRUE}, the adjusted Shapley values are displayed.
+If \code{num_post} is specified, a bar plot or summary plot for the selected posterior sample is generated.}
 }
 \description{
-The `plot.Explain` function provides various visualization methods for Shapley values. 
+The \code{plot.Explain} function provides various visualization methods for Shapley values. 
 The values and format used in the graph are determined based on the input parameters.
 }

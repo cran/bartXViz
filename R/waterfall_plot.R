@@ -1,6 +1,6 @@
 #' Waterfall plot
 #'
-#' The `waterfall_plot` function is a bar chart that displays the positive and
+#' The \code{waterfall_plot} function is a bar chart that displays the positive and
 #' negative contributions across sequential data points, visualizing how each
 #' variable's contributions change for a single observation.
 #'
@@ -10,8 +10,9 @@
 #' @param title plot title
 #' @param geo.unit The name of the stratum variable in the BARP model as a character.
 #' @param geo.id Enter a single value of the stratum variable as a character.
+#' @param obs_name Enter the name of the vector containing observation IDs or names.
 #' @return The function returns a waterfall plot.
-#' \item{plot_out}{The waterfall plot of the observation at index `obs_num`.}
+#' \item{plot_out}{The waterfall plot of the observation at index \code{obs_num}.}
 #' @examples
 #' \donttest{
 #' ## Friedman data
@@ -38,7 +39,7 @@
 #'
 #' @export
 waterfall_plot <- function ( object, obs_num, title = NULL,
-                            geo.unit=NULL , geo.id = NULL){
+                            geo.unit=NULL , geo.id = NULL, obs_name = NULL){
 
   from <- to <- fill <- values <- 0; 
   if (is.null (geo.unit) == FALSE & is.null (geo.unit) ==FALSE){
@@ -71,6 +72,7 @@ waterfall_plot <- function ( object, obs_num, title = NULL,
   }else {
     baseline <-  object $ fnull
     feature_names <- names(object $ newdata)
+    
 
     if(inherits(object,"Explain")& dim (object$phis[[1]])[2]==1){
 
@@ -101,9 +103,7 @@ waterfall_plot <- function ( object, obs_num, title = NULL,
 
   phis_adj <- as.data.frame(phis_adj)
   names ( phis_adj) <- feature_names
-
-
-
+  
    obj  <- as.data.frame( t( phis_adj[as.numeric(obs_num),  ]))
    names (obj) <- "values"
    obj $ names <- rownames(obj)
@@ -136,14 +136,15 @@ waterfall_plot <- function ( object, obs_num, title = NULL,
          } else  if(is.null(name_temp) ) {
            num_ind <-  rownames(temp)
          }
-
-         dumm_tmp <- object $ factor_names [ num_factor==1 ]
+         
          dumm_ind <- NULL
-
-         for (i in  dumm_tmp) {
-           dumm_ind <- rownames(temp)[str_which(rownames(temp),i )]
+         if( !inherits(object, "ExplainbartMachine") ) {
+           dumm_tmp <- object $ factor_names [ num_factor==1 ]
+           for (i in  dumm_tmp) {
+             dumm_ind <- rownames(temp)[str_which(rownames(temp),i )]
+           }
          }
-
+        
        var_idx <- c(rownames(temp) [temp[,1]==1],num_ind ,dumm_ind)
        obj <-  obj[which(obj $names %in%  var_idx),]
 
@@ -180,9 +181,18 @@ waterfall_plot <- function ( object, obs_num, title = NULL,
      plot_out <- plot_out + ggtitle(title)
    }
 
-  plot_out <-  annotate_figure(plot_out,
-                                       top =  text_grob(paste0("Observation number = ", obs_num),
-                                      hjust = 1, x = 0.95,vjust = 1.05, size = 10 ))
+
+  
+  if(is.null(obs_name) ) {
+    
+    plot_out <-  annotate_figure(plot_out,
+                                 top =  text_grob(paste0("Observation number = ", obs_num),
+                                                  hjust = 1, x = 0.95,vjust = 1.05, size = 10 ))
+  } else if(is.null(obs_name)==FALSE) {
+    plot_out <-  annotate_figure(plot_out,
+                                 top =  text_grob(paste0("Observation number = ", obs_num,"\n",obs_name[obs_num]),
+                                                  hjust = 1, x = 0.95,vjust = 1.05, size = 10 ))
+  }
 
 
   print(plot_out)

@@ -1,30 +1,30 @@
-#' Approximate Shapley values computed from a BART model fitted using `bartMachine`
+#' Approximate Shapley values computed from a BART model fitted using \code{bartMachine}
 #'
 #' This function is used to calculate the contribution of each variable
 #' in the Bayesian Additive Regression Trees (BART) model using permutation.
 #' It is used to compute the Shapley values of models estimated 
-#' using the `bartMachine` function from the `bartMachine`.
+#' using the \code{bartMachine} function from the \pkg{bartMachine}.
 #'
 #' @param object A BART model (Bayesian Additive Regression Tree) estimated
-#' using the `bartMachine` function from the `bartMachine`.
+#' using the \code{bartMachine} function from the \pkg{bartMachine}.
 #' @param feature_names The name of the variable for which you want to check the contribution.
-#' The default value is set to `NULL`, which means the contribution of all variables in `X` will be calculated.
+#' The default value is set to \code{NULL}, which means the contribution of all variables in \code{X} will be calculated.
 #' @param X The dataset containing all independent variables used as input when estimating the BART model. Categorical or character variables must not contain an underscore ("_") in their values or labels.
-#' @param nsim The number of Monte Carlo repetitions used for estimating each Shapley value is set to `1` by default for the BART model.
+#' @param nsim The number of Monte Carlo repetitions used for estimating each Shapley value is set to \code{1} by default for the BART model.
 #' @param pred_wrapper A function used to estimate the predicted values of the model.
 #' @param newdata New data containing the variables included in the model.
 #' This is used when checking the contribution of newly input data using the model.
-#' The default value is set to `NULL`, meaning that the input `X` data,
+#' The default value is set to \code{NULL}, meaning that the input \code{X} data,
 #' i.e., the data used for model estimation, will be used by default.
-#' @param parallel The default value is set to `FALSE`,
-#' but it can be changed to `TRUE` for parallel computation.
+#' @param parallel The default value is set to \code{FALSE},
+#' but it can be changed to \code{TRUE} for parallel computation.
 #' @param ... Additional arguments to be passed
-#' @return An object of class `ExplainbartMachine` with the following components :
+#' @return An object of class \code{ExplainbartMachine} with the following components :
 #' \item{phis}{A list containing the Shapley values for each variable.}
 #' \item{newdata}{The data used to check the contribution of variables. If a variable has categories, categorical variables are one-hot encoded.}
 #' \item{fnull}{The expected value of the model's predictions.}
 #' \item{fx}{The prediction value for each observation.}
-#' \item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to NULL.}
+#' \item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 #' @export
 #' @examples 
 #' \donttest{
@@ -102,27 +102,21 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
   temp_new <-  as.data.frame( pre_process_new_data(newdata,object))
   featurenames <- names(  temp_new )
 
-  tmp_var <-  stringr::str_remove ( featurenames, "_[^_]*$")
-  tmp_var <- data.frame (  tmp_var )%>%
-    dplyr::add_count(tmp_var, name = "n") %>%
-    dplyr::distinct(.keep_all = TRUE)
 
-  idx <- NULL
-  for (j in tmp_var$tmp_var[tmp_var$n == 2]){
-    idx <- c(idx,min(which(stringr :: str_detect( featurenames, paste0("^", j) ))))
-  }
-
-  if(is.null (idx) == F){
-    temp_new <-  temp_new [,-idx]
-    featurenames <- names(  temp_new )
-  }
-
-
-
+  count_matches <- sapply(feature_names, function(fn) {
+    sum(startsWith(featurenames, fn))
+  })
+  
+ 
+  tmp_var <- data.frame(
+    var = names(count_matches),
+    n = as.integer(count_matches),
+    row.names = NULL
+  )
+  
   if ( (sum(sapply(newdata, is.factor)) > 0  | sum(sapply(newdata, is.character)) > 0) & (
-       length(which(stringr::str_detect( featurenames, '[0-9]$'   ))) >= 2 )) {
-
-
+    sum( tmp_var $ n  >=2) >= 1)) {
+ 
     phis  <-  foreach(i = 1:length(  featurenames ) ) %.do% {
 
       ind <- names(temp_new)[i]
@@ -130,7 +124,8 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
 
       temp_var <- NULL
       value_factor <- NULL
-      if( tmp_var$n[tmp_var$tmp_var ==   feature_names[ phi_idx]] >=  2 ){
+      
+      if( tmp_var$n[tmp_var$ var ==   feature_names[ phi_idx]] >=  2 ){
         value_factor <-  tail(unlist(strsplit( ind , split = "_")),1)
         temp_var <- stringr::str_replace (  ind , paste0("_",value_factor),"")
       }
@@ -139,20 +134,20 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
       temp <- matrix (0, nrow = dim (newdata)[1],
                      ncol= object$num_iterations_after_burn_in )
 
-      if(length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) > 2) {
+      if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) >  2) {
 
         temp [which(newdata[,phi_idx ]==value_factor),] <-
           phis_temp[[phi_idx]] [which(newdata[,phi_idx] == value_factor),]
         temp
 
-      } else  if(length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) == 2) {
+      } else  if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) == 2) {
 
         temp [which(newdata[,phi_idx ]==1),]  <-
           phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  1),]
         temp
 
       } else {
-        temp  <- phis_temp[[i]]
+        temp  <- phis_temp[[phi_idx]]
         temp
       }
     }
@@ -160,10 +155,10 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
 
     factor_names <- NULL
     
-    if ( length (tmp_var$tmp_var[tmp_var$n >= 2])  >= 1  ){
+    if ( sum( tmp_var$n >=2) >= 1  ){
       
       names( phis) <- names(temp_new)
-      factor_names <-  names(X) [which((names(X) %in% names(temp_new )) ==FALSE)]
+      factor_names <-  names(temp_new ) [which((names(temp_new )%in% names(X) ) ==FALSE)]
 
     } 
     }else if ( sum(sapply(newdata, is.factor)) == 0 ){

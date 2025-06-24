@@ -59,30 +59,30 @@ Explain(object, ...)
 }
 \arguments{
 \item{object}{A fitted model object (e.g., a
-`ranger::ranger()`, or` xgboost::xgboost()`,object, to name a few).}
+\code{ranger::ranger()}, or \code{xgboost::xgboost()},object, to name a few).}
 
 \item{...}{Additional arguments to be passed}
 
 \item{feature_names}{Character string giving the names of the predictor
-variables (i.e., features) of interest. If `NULL` (default) they will be
-taken from the column names of `X`.}
+variables (i.e., features) of interest. If \code{NULL}(default) they will be
+taken from the column names of \code{X}.}
 
 \item{X}{A matrix-like R object (e.g., a data frame or matrix) containing 
 ONLY the feature columns from the training data (or suitable background data 
 set). If the input includes categorical variables that need to be one-hot encoded, 
-please input data that has been processed using '`data.table::one_hot()`.
+please input data that has been processed using \code{data.table::one_hot()}.
 In XGBoost, the input should be the raw dataset containing only the explanatory variables, 
-not the data created using `xgb.DMatrix.`
- **NOTE:** This argument is required whenever `exact = FALSE`.}
+not the data created using \code{xgb.DMatrix}.
+ **NOTE:** This argument is required whenever \code{exact = FALSE}.}
 
 \item{nsim}{The number of Monte Carlo repetitions to use for estimating each 
-Shapley value (only used when `exact = FALSE`). Default is 1. 
-**NOTE:** To obtain the most accurate results, `nsim` should be set 
+Shapley value (only used when \code{exact = FALSE}). Default is \code{1}. 
+**NOTE:** To obtain the most accurate results, \code{nsim} should be set 
 as large as feasibly possible.}
 
 \item{pred_wrapper}{Prediction function that requires two arguments,
-`object` and `newdata`. **NOTE:** This argument is required 
-whenever `exact = FALSE`. The output of this function should be 
+\code{object} and \code{newdata}. **NOTE:** This argument is required 
+whenever \code{exact = FALSE}. The output of this function should be 
 determined according to:
 
 \describe{
@@ -96,46 +96,46 @@ determined according to:
 \item{newdata}{A matrix-like R object (e.g., a data frame or matrix) 
 containing ONLY the feature columns for the observation(s) of interest; that 
 is, the observation(s) you want to compute explanations for. Default is 
-`NULL` which will produce approximate Shapley values for all the rows in 
-`X` (i.e., the training data). 
+\code{NULL} which will produce approximate Shapley values for all the rows in 
+\code{X} (i.e., the training data). 
 If the input includes categorical variables that need to be one-hot encoded, 
-please input data that has been processed using `data.table::one_hot()`.}
+please input data that has been processed using \code{data.table::one_hot()}.}
 
 \item{parallel}{Logical indicating whether or not to compute the approximate
-Shapley values in parallel across features; default is `FALSE`. **NOTE:**
-setting `parallel = TRUE` requires setting up an appropriate (i.e., 
+Shapley values in parallel across features; default is \code{FALSE}. **NOTE:**
+setting \code{parallel = TRUE} requires setting up an appropriate (i.e., 
 system-specific) *parallel backend* as described in the 
-[foreach](https://cran.r-project.org/package=foreach); for details, see
-`vignette("foreach", package = "foreach")` in R.}
+\pkg{foreach}(\url{https://cran.r-project.org/package=foreach}); for details, see
+\code{vignette("foreach", package = "foreach")} in R.}
 
 \item{exact}{Logical indicating whether to compute exact Shapley values. 
-Currently only available for [stats::lm()](https://cran.r-project.org/web/packages/STAT/STAT.pdf), 
-[xgboost::xgboost()](https://cran.r-project.org/web/packages/xgboost/xgboost.pdf), and [lightgbm::lightgbm()](https://cran.rstudio.com/web/packages/lightgbm/lightgbm.pdf) objects. 
-Default is `FALSE`. Note that setting `exact = TRUE` will return 
-explanations for each of the `stats::terms()` in an 
-`stats::lm()` object. Default is `FALSE`.}
+Currently only available for \code{stats::lm()}(\url{https://CRAN.R-project.org/package=STAT}), 
+\code{xgboost::xgboost()}(\url{https://CRAN.R-project.org/package=xgboost}), and \code{lightgbm::lightgbm()}(\url{https://CRAN.R-project.org/package=lightgbm}) objects. 
+Default is \code{FALSE}. Note that setting \code{exact = TRUE} will return 
+explanations for each of the \code{stats::terms()} in an 
+\code{stats::lm()} object. Default is \code{FALSE}.}
 }
 \value{
-An object of class `Explain` with the following components :
+An object of class \code{Explain} with the following components :
 \item{newdata}{The data frame formatted dataset employed for the estimation of Shapley values.
              If a variable has categories, categorical variables are one-hot encoded.} 
 \item{phis}{A list format containing Shapley values for individual variables.}
 \item{fnull}{The expected value of the model's predictions.}
 \item{fx}{The prediction value for each observation.}
 \item{factor_names}{The name of the categorical variable.
-If the data contains only continuous or dummy variables, it is set to `NULL`.}
+If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 }
 \description{
 Compute fast (approximate) Shapley values for a set of features using the 
 Monte Carlo algorithm described in Strumbelj and Igor (2014).
 An efficient algorithm for tree-based models, commonly referred to as Tree SHAP, is also 
-supported for [lightgbm](https://cran.r-project.org/package=lightgbm) and
-[xgboost](https://cran.r-project.org/package=xgboost) models; see Lundberg 
+supported for \pkg{lightgbm}(\url{https://cran.r-project.org/package=lightgbm}) and
+\pkg{xgboost}(\url{https://cran.r-project.org/package=xgboost}) models; see Lundberg 
 et. al. (2020) for details.
 }
 \note{
-Setting `exact = TRUE` with a linear model (i.e., an 
-`stats::lm()` or `stats::glm()` object) assumes that the
+Setting \code{exact = TRUE} with a linear model (i.e., an 
+\code{stats::lm()} or \code{stats::glm()} object) assumes that the
 input features are independent.
 }
 \examples{
@@ -144,7 +144,7 @@ input features are independent.
 # A projection pursuit regression (PPR) example
 #
 
-# Load the sample data; see ?datasets::mtcars for details
+# Load the sample data; see datasets::mtcars for details
 data(mtcars)
 
 # Fit a projection pursuit regression model

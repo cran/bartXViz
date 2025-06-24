@@ -18,32 +18,32 @@
 }
 \arguments{
 \item{object}{A BARP model (Bayesian Additive Regression Tree) estimated
-using the `barps` function, a modified version of the `barp` function from the BARP library with a fixed seed.}
+using the \code{barps} function, a modified version of the \code{barp} function from the BARP library with a fixed seed.}
 
 \item{feature_names}{The name of the variable for which you want to check the contribution.
-The default value is set to `NULL`, which means the contribution of all variables in `X` will be calculated.}
+The default value is set to \code{NULL}, which means the contribution of all variables in \code{X} will be calculated.}
 
-\item{X}{The dataset containing all independent variables used as input when estimating the BART model.T he explanatory variables X included in the model must be converted to factors prior to input.}
+\item{X}{The dataset containing all independent variables used as input when estimating the BART model. The explanatory variables \code{X} included in the model must be converted to factors prior to input.}
 
-\item{nsim}{The number of Monte Carlo sampling iterations, which is fixed at `1` by default in the case of the BARP model.}
+\item{nsim}{The number of Monte Carlo sampling iterations, which is fixed at \code{1} by default in the case of the BARP model.}
 
 \item{pred_wrapper}{A function used to estimate the predicted values of the model.}
 
-\item{census}{Census data containing the names of the `X` columns. It should also have the same format as `X` and include a variable named `proportion`, which indicates the number of individuals corresponding to each combination.}
+\item{census}{Census data containing the names of the \code{X} columns. It should also have the same format as \code{X} and include a variable named `proportion`, which indicates the number of individuals corresponding to each combination.}
 
 \item{geo.unit}{Enter the name of the stratification variable used in post stratification.}
 
-\item{parallel}{The default value is set to `FALSE`, but it can be changed to `TRUE` for parallel computation.}
+\item{parallel}{The default value is set to \code{FALSE}, but it can be changed to \code{TRUE} for parallel computation.}
 
 \item{...}{Additional arguments to be passed}
 }
 \value{
-Returns of class `Explainbarp` with consisting of a list with the following components:
+Returns of class \code{Explainbarp} with consisting of a list with the following components:
 \item{phis}{A list containing the Shapley values for each variable.}
 \item{newdata}{The data used to check the contribution of variables. If a variable has two categories, it is dummy-coded, and if it has three or more categories, categorical variables are one-hot encoded.}
 \item{fnull}{The expected value of the model's predictions.}
 \item{fx}{The prediction value for each observation.}
-\item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to NULL.}
+\item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 }
 \description{
 This function is implemented to calculate the contribution of each variable
