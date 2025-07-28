@@ -1,6 +1,6 @@
-#' Approximate Shapley values computed from a BART model fitted using \code{bart}
+#' Approximate Shapley Values Computed from a BART Model Fitted using \code{bart}
 #'
-#' `Explain.bart` function is used to calculate the contribution of each variable
+#' \code{Explain.bart} function is used to calculate the contribution of each variable
 #' in the Bayesian Additive Regression Trees (BART) model using permutation.
 #' It is used to compute the Shapley values of models estimated using the \code{bart} function from the \code{dbarts}.
 #'
@@ -29,13 +29,13 @@
 #' \donttest{
 #' ## Friedman data
 #' set.seed(2025)
-#' n = 200
-#' p = 5
-#' X = data.frame(matrix(runif(n * p), ncol = p))
-#' y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+#' n <- 200
+#' p <- 5
+#' X <- data.frame(matrix(runif(n * p), ncol = p))
+#' y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 #' 
 #' ## Using the dbarts library
-#' model = dbarts::bart(X,y,keeptrees = TRUE ,  ndpost = 200)
+#' model <- dbarts::bart(X,y,keeptrees = TRUE ,  ndpost = 200)
 #' 
 #' ## prediction wrapper function
 #' pfun <- function(object, newdata) {
@@ -43,12 +43,18 @@
 #'        }
 #'        
 #'## Calculate shapley values
-#'model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+#'model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 #'}
 Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred_wrapper = NULL,
                          newdata = NULL,   parallel = FALSE, ...) {
 
   i<-0;
+  
+  if (missing(object)) {
+    message("The object argument is missing a model input. Please provide a model to compute the Shapley values.") 
+    return(invisible(NULL))  
+  }
+  
   # Only nsim = 1
   if (nsim > 1) stop ("It stops because nsim > 1.",
                       "Because the BART model uses posterior samples,",
@@ -75,8 +81,8 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
        newdata <-  X
   }
 
-  fx  <-   colMeans ( predict(object, newdata =  newdata ))
-  fnull <-  mean( colMeans (object$yhat.train)) # baseline value (i.e., avg training prediction)
+  fx  <-   colMeans (predict(object, newdata =  newdata))
+  fnull <-  mean(colMeans(object$yhat.train)) # baseline value (i.e., avg training prediction)
 
   # Deal with other NULL arguments
   if (is.null(feature_names)) {
@@ -87,7 +93,7 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
   `%.do%` <- if (isTRUE(parallel)) `%dopar%` else `%do%`
 
   # Compute approximate Shapley values # ,  ...
-  phis_temp <- foreach(i = feature_names ) %.do% {
+  phis_temp <- foreach(i = feature_names) %.do% {
      t(Explain_column(object, X = X, column = i, pred_wrapper = pred_wrapper,
                                  newdata = newdata))
     # number of post by obs = n matrix , list = number of variable
@@ -110,7 +116,7 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
 
 
   if (( sum(sapply(newdata, is.factor)) > 0 | sum(sapply(newdata, is.character)) > 0) &
-      sum( tmp_var $ n  >=2) >= 1 ) {
+      sum( tmp_var$n  >=2) >= 1 ) {
 
     factor_names <- names(X) [which( ( names(X) %in% featurenames  ) ==FALSE)]
 
@@ -122,20 +128,20 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
       temp_var <- NULL
       value_factor <- NULL
       
-      if( tmp_var$n[tmp_var$ var ==   feature_names[ phi_idx]] >=  2 ){
-        value_factor <-  tail(unlist(strsplit( ind , split = "\\.")),1)
-        temp_var <- stringr::str_replace (  ind , paste0("\\.",value_factor),"")
+      if( tmp_var$n[tmp_var$var == feature_names[phi_idx]] >=  2 ){
+        value_factor <-  tail(unlist(strsplit(ind, split = "\\.")),1)
+        temp_var <- stringr::str_replace (ind, paste0("\\.",value_factor),"")
       }
       
-        temp <- matrix (0, nrow = dim (newdata)[1],ncol= dim(object $ yhat.train) [1] )
+        temp <- matrix (0, nrow = dim (newdata)[1],ncol= dim(object$yhat.train) [1] )
        
        if( is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) >  2 ) {
  
          temp [which(newdata[,phi_idx ]==value_factor),] <- phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  value_factor),]
          temp
-       }  else  if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) == 2) {
+       }  else  if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect(featurenames, paste0("^",temp_var)))) == 2) {
          
-         temp [which(newdata[,phi_idx ]==1),]  <-
+         temp [which(newdata[,phi_idx]==1),]  <-
            phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  1),]
          temp
          
@@ -148,11 +154,11 @@ Explain.bart <- function(object, feature_names = NULL, X = NULL, nsim = 1,  pred
     names( phis) <-  featurenames
     newdata <- as.data.frame(makeModelMatrixFromDataFrame (newdata))
 
-  } else if ( sum(sapply(newdata, is.factor)) == 0 ){
+  } else if (sum(sapply(newdata, is.factor)) == 0){
     phis <- phis_temp
 
-    if( sum(featurenames%in%feature_names) != length(featurenames) ){
-      factor_names <- names(X) [which( ( names(X) %in% featurenames ) ==FALSE)]
+    if( sum(featurenames%in%feature_names) != length(featurenames)){
+      factor_names <- names(X)[which((names(X) %in% featurenames) ==FALSE)]
     }else{
       factor_names <- NULL
     }

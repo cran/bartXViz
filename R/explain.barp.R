@@ -1,4 +1,4 @@
-#' Approximate Shapley values computed from the BARP model
+#' Approximate Shapley Values Computed from the BARP Model
 #'
 #' This function is implemented to calculate the contribution of each variable
 #' in the BARP (Bayesian Additive Regression Tree with post-stratification) model
@@ -27,6 +27,11 @@ Explain.barp <- function(object, feature_names = NULL, X = NULL, nsim = 1, pred_
                          census = NULL, geo.unit = NULL,   parallel = FALSE,   ...) {
   
   i <- 0;
+  if (missing(object)) {
+    message("The object argument is missing a model input. Please provide a model to compute the Shapley values.") 
+    return(invisible(NULL))  
+  }
+  
   if (is.null(census)) {
     stop("Please enter your census data.", call. = FALSE)
   }
@@ -56,29 +61,30 @@ Explain.barp <- function(object, feature_names = NULL, X = NULL, nsim = 1, pred_
   
 
     # predicted value
-    fnull <-  object $ pred.opn [,1:2]
-    names (  fnull ) [2] <- "f_null"
+    fnull <-  object$pred.opn [,1:2]
+    names (fnull) [2] <- "f_null"
 
     # variable names
-    feature_names <- names(object $ trees $ X)
+    feature_names <- names(object$trees$X)
 
     # Variable sorting
-    censusdata <- as.data.frame(census[,  feature_names])
-    X <- X [,  feature_names]
+    censusdata <- as.data.frame(census[,feature_names])
+    X <- X [,feature_names]
 
     # Categorical variable processing
-    newdata <- as.data.frame( pre_process_new_data(censusdata,object $ trees))
+    newdata <- as.data.frame( pre_process_new_data(censusdata,object$trees))
 
   # Set up the 'foreach' "do" operator
   `%.do%` <- if (isTRUE(parallel)) `%dopar%` else `%do%`
 
-  set.seed(object $ setSeed)
+  set.seed(object$setSeed)
+  
   # Compute approximate Shapley values
-  phis_temp <-  foreach(i = feature_names  ) %.do% {
-    Explain_column ( object$trees, X = X, column = i,
+  phis_temp <-  foreach(i = feature_names) %.do% {
+    Explain_column (object$trees, X = X, column = i,
                               pred_wrapper = pred_wrapper,newdata = censusdata)
   }
-  names( phis_temp) <- feature_names
+  names(phis_temp) <- feature_names
 
 
   # Deal with other NULL arguments
@@ -86,9 +92,9 @@ Explain.barp <- function(object, feature_names = NULL, X = NULL, nsim = 1, pred_
   featurenames <- colnames(newdata) [-which(geo_check)]
 
 
-  phis  <-  foreach(i = 1:length(featurenames) ) %.do% {
+  phis  <-  foreach(i = 1:length(featurenames)) %.do% {
     ind <- featurenames[i]
-    phi_idx <- which( str_detect( ind , feature_names ))
+    phi_idx <- which(str_detect(ind, feature_names))
 
     temp <- matrix (0, nrow = dim (newdata)[1],ncol= object$trees$num_iterations_after_burn_in )
     temp [which(newdata[,ind]==1),] <- phis_temp[[phi_idx]] [which(newdata[,ind]==1),]
@@ -114,9 +120,9 @@ Explain.barp <- function(object, feature_names = NULL, X = NULL, nsim = 1, pred_
  
   check <- name_temp[(name_temp[,1] == name_temp [,2]),1] 
   
-  if (length(check) >=1) {
+  if (length(check) >= 1) {
     factor_names <- featurenames [-which(featurenames %in% check)]
-  } else if (  identical(check, character(0)) ){
+  } else if (identical(check, character(0))){
     factor_names <- featurenames
   }
  

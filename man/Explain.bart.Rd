@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.dbart.R
 \name{Explain.bart}
 \alias{Explain.bart}
-\title{Approximate Shapley values computed from a BART model fitted using \code{bart}}
+\title{Approximate Shapley Values Computed from a BART Model Fitted using \code{bart}}
 \usage{
 \method{Explain}{bart}(
   object,
@@ -47,7 +47,7 @@ Returns of class \code{ExplainBART} with consisting of a list with the following
 \item{factor_names}{The name of the categorical variable. If the data contains only continuous or dummy variables, it is set to \code{NULL}.}
 }
 \description{
-`Explain.bart` function is used to calculate the contribution of each variable
+\code{Explain.bart} function is used to calculate the contribution of each variable
 in the Bayesian Additive Regression Trees (BART) model using permutation.
 It is used to compute the Shapley values of models estimated using the \code{bart} function from the \code{dbarts}.
 }
@@ -55,13 +55,13 @@ It is used to compute the Shapley values of models estimated using the \code{bar
 \donttest{
 ## Friedman data
 set.seed(2025)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+n <- 200
+p <- 5
+X <- data.frame(matrix(runif(n * p), ncol = p))
+y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 
 ## Using the dbarts library
-model = dbarts::bart(X,y,keeptrees = TRUE ,  ndpost = 200)
+model <- dbarts::bart(X,y,keeptrees = TRUE ,  ndpost = 200)
 
 ## prediction wrapper function
 pfun <- function(object, newdata) {
@@ -69,6 +69,6 @@ pfun <- function(object, newdata) {
        }
        
 ## Calculate shapley values
-model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 }
 }

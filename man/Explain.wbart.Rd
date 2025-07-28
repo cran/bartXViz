@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_wbart.R
 \name{Explain.wbart}
 \alias{Explain.wbart}
-\title{Approximate Shapley values computed from a BART model fitted using \code{wbart} or \code{gbart}}
+\title{Approximate Shapley Values Computed from a BART Model Fitted using \code{wbart} or \code{gbart}}
 \usage{
 \method{Explain}{wbart}(
   object,
@@ -56,19 +56,19 @@ It is used to compute the Shapley values of models estimated using the \code{wba
 \donttest{
 ## Friedman data
 set.seed(2025)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+n <- 200
+p <- 5
+X <- data.frame(matrix(runif(n * p), ncol = p))
+y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 
-## Using the BART library
-model = BART::wbart(X,y,ndpost=200)
+## Using the BART 
+model <- BART::wbart(X,y,ndpost=200)
 ## prediction wrapper function
 pfun <- function(object, newdata) {
        predict(object , newdata)
        }
        
 ## Calculate shapley values
-model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 }
 }

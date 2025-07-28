@@ -3,7 +3,7 @@
 \name{plot.ExplainBART}
 \alias{plot.ExplainBART}
 \alias{plot}
-\title{A function for visualizing the Shapley values of BART models}
+\title{A Function for Visualizing the Shapley Values of BART Models}
 \usage{
 \method{plot}{ExplainBART}(
   x,
@@ -23,7 +23,8 @@
 \item{average}{Input the reference value for calculating the mean of the object's \code{phi} list.
 \code{"obs"} represents abind the average based on observations (#post by #variable),
 while \code{"post"} represents the average based on posterior samples (#obs by #variable).
-If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.}
+If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.
+If no value is specified, "both" is used as the default.}
 
 \item{type}{\code{"bar"} represents a bar chart that includes the average contribution of each variable,
 while \code{"bee"} represents a summary plot, allowing you to determine the graph's format.}
@@ -57,13 +58,13 @@ The values and format used in the graph are determined based on the input parame
 \donttest{
 ## Friedman data
 set.seed(2025)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+n <- 200
+p <- 5
+X <- data.frame(matrix(runif(n * p), ncol = p))
+y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 
 ## Using dbarts 
-model = dbarts::bart (X,y, keeptrees = TRUE, ndpost = 200)
+model <- dbarts::bart (X,y, keeptrees = TRUE, ndpost = 200)
 
 # prediction wrapper function
 pfun <- function (object, newdata) {
@@ -71,7 +72,7 @@ predict(object, newdata)
 }
 
 # Calculate shapley values
-model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 
 # Distribution of Shapley values (boxplot) 
 # computed based on observation and posterior sample criteria

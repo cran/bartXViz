@@ -1,4 +1,4 @@
-#' Bayesian Additive Regression Trees with Post-stratification (BARP)
+#' Bayesian Additive Regression Trees with Post-Stratification (BARP)
 #'
 #' This function uses Bayesian Additive Regression Trees (BART) to extrapolate survey data to a level of geographic aggregation at which the original survey was not sampled to be representative of.
 #' This is a modified version of the \code{barp} function from the \pkg{BARP} to allow for seed fixation.(\url{https://github.com/jbisbee1/BARP})
@@ -15,7 +15,7 @@
 #' @param nsims The number of bootstrap simulations.
 #' @param setSeed Seed to control random number generation.
 #' @param ... Additional arguments to be passed to bartMachine or SuperLearner.
-#' @return Returns an object of class `BARP`, containing a list of the following components:
+#' @return Returns an object of class \code{BARP}, containing a list of the following components:
 #' \item{pred.opn}{A \code{data.frame} where each row corresponds to the geographic unit of interest and the columns summarize the predicted outcome and the upper and lower bounds for the given credible interval (\code{cred_int}).}
 #' \item{trees}{A \code{bartMachine} object.} 
 #' \item{risk}{A \code{data.frame} containing the cross-validation risk for each algorithm and the associated weight used in the ensemble predictions. Only useful when multiple algorithms are used.}
@@ -35,7 +35,8 @@ barps <- function(y,x,dat,census,geo.unit,algorithm = "BARP",  setSeed = NULL,
                  proportion = "None",cred_int = c(0.025,0.975),BSSD = FALSE,nsims = 200,...) {
  
    n <- 0;  
-  set.seed(setSeed)
+   if (!is.null(setSeed)) { set.seed(setSeed) }
+   
   # Error and warning checks
   if(!all(x %in% colnames(dat))) {
     stop(paste("Variable '",x[which(!(x %in% colnames(dat)))],"' is not in your survey data.",sep=""))
@@ -57,10 +58,10 @@ barps <- function(y,x,dat,census,geo.unit,algorithm = "BARP",  setSeed = NULL,
 
   # Optional parameters
   dots <- list(...)
-  dots$seed = setSeed
+  dots$seed <- setSeed
   # Building parameter lists
   bart.args <- names(as.list(args(bartMachine)))
-  serial = FALSE
+  serial <- FALSE
   if(any(names(dots) %in% bart.args) & grepl("barp|BARP|bart|BART|bartMachine",paste(algorithm,collapse = " "))) {
     dots.barp <- list()
     for(par in which(names(dots) %in% bart.args)) {
@@ -79,7 +80,7 @@ barps <- function(y,x,dat,census,geo.unit,algorithm = "BARP",  setSeed = NULL,
     if(any(names(dots.barp) == "serialize")) {
       if(length(algorithm) > 1 | BSSD == TRUE) {
         dots.barp[[which(names(dots.barp) == "serialize")]] <- NULL
-        serial = TRUE
+        serial <- TRUE
       }
     }
     barp_aug <- create.Learner("SL.bartMachine",params = dots.barp)
@@ -122,8 +123,8 @@ barps <- function(y,x,dat,census,geo.unit,algorithm = "BARP",  setSeed = NULL,
       for(oth in 1:length(dots.oth)) {
         input[[names(dots.oth)[oth]]] <- dots.oth[[oth]]
       }
-      input$BSSD = BSSD
-      input$setSeed = setSeed
+      input$BSSD <- BSSD
+      input$setSeed <- setSeed
       sl = do.call(barp.SL.seed,input)
 
       # For bootstrapped intervals, use the ensemble predictions

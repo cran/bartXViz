@@ -1,4 +1,4 @@
-#' Approximate Shapley values computed from a BART model fitted using \code{bartMachine}
+#' Approximate Shapley Values Computed from a BART Model Fitted using \code{bartMachine}
 #'
 #' This function is used to calculate the contribution of each variable
 #' in the Bayesian Additive Regression Trees (BART) model using permutation.
@@ -30,13 +30,13 @@
 #' \donttest{
 #'## Friedman data
 #'set.seed(2025)
-#'n = 200
-#'p = 5
-#'X = data.frame(matrix(runif(n * p), ncol = p))
-#'y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+#'n <- 200
+#'p <- 5
+#'X <- data.frame(matrix(runif(n * p), ncol = p))
+#'y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 #'
-#'##  Using the bartMachine library 
-#'model = bartMachine::bartMachine(X,y, seed = 2025, num_iterations_after_burn_in =200 )
+#'##  Using the bartMachine 
+#'model <- bartMachine::bartMachine(X, y, seed = 2025, num_iterations_after_burn_in =200 )
 #'
 #'## prediction wrapper function
 #'pfun <- function (object, newdata) {
@@ -44,7 +44,7 @@
 #'   }
 #'   
 #'## Calculate shapley values
-#'model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+#'model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 #'}
 
 Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
@@ -52,6 +52,12 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
                                 newdata = NULL,   parallel = FALSE, ...) {
   
   i<- 0; n <- 0;
+  
+  if (missing(object)) {
+    message("The object argument is missing a model input. Please provide a model to compute the Shapley values.") 
+    return(invisible(NULL))  
+  }
+  
   # Only nsim = 1
   if (nsim > 1) stop ("It stops because nsim > 1.",
                       "Because the BART model uses posterior samples,",
@@ -80,7 +86,7 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
   }
 
 
-  fx <-   predict(object, new_data = newdata)
+  fx <- predict(object, new_data = newdata)
   # baseline value (i.e., avg training prediction)
   fnull <- mean(as.numeric(object $ y_hat_train))
 
@@ -99,8 +105,8 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
   }
   names(phis_temp) <- feature_names
 
-  temp_new <-  as.data.frame( pre_process_new_data(newdata,object))
-  featurenames <- names(  temp_new )
+  temp_new <-  as.data.frame(pre_process_new_data(newdata,object))
+  featurenames <- names(temp_new)
 
 
   count_matches <- sapply(feature_names, function(fn) {
@@ -114,33 +120,33 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
     row.names = NULL
   )
   
-  if ( (sum(sapply(newdata, is.factor)) > 0  | sum(sapply(newdata, is.character)) > 0) & (
-    sum( tmp_var $ n  >=2) >= 1)) {
+  if ( (sum(sapply(newdata, is.factor)) > 0  | sum(sapply(newdata, is.character)) > 0) & 
+       (sum( tmp_var$n  >=2) >= 1)) {
  
-    phis  <-  foreach(i = 1:length(  featurenames ) ) %.do% {
+    phis  <-  foreach(i = 1:length(featurenames) ) %.do% {
 
       ind <- names(temp_new)[i]
-      phi_idx <- which( stringr::str_detect( ind , feature_names ))
+      phi_idx <- which( stringr::str_detect(ind, feature_names))
 
       temp_var <- NULL
       value_factor <- NULL
       
-      if( tmp_var$n[tmp_var$ var ==   feature_names[ phi_idx]] >=  2 ){
-        value_factor <-  tail(unlist(strsplit( ind , split = "_")),1)
-        temp_var <- stringr::str_replace (  ind , paste0("_",value_factor),"")
+      if( tmp_var$n[tmp_var$var ==  feature_names[phi_idx]] >=  2 ){
+        value_factor <-  tail(unlist(strsplit(ind, split = "_")),1)
+        temp_var <- stringr::str_replace (ind, paste0("_",value_factor),"")
       }
 
 
       temp <- matrix (0, nrow = dim (newdata)[1],
                      ncol= object$num_iterations_after_burn_in )
 
-      if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) >  2) {
+      if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)))) >  2) {
 
-        temp [which(newdata[,phi_idx ]==value_factor),] <-
+        temp [which(newdata[,phi_idx]==value_factor),] <-
           phis_temp[[phi_idx]] [which(newdata[,phi_idx] == value_factor),]
         temp
 
-      } else  if(is.null(temp_var) ==FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)  ))) == 2) {
+      } else if(is.null(temp_var) == FALSE & length(which(stringr::str_detect( featurenames, paste0("^",temp_var)))) == 2) {
 
         temp [which(newdata[,phi_idx ]==1),]  <-
           phis_temp[[phi_idx]] [which(newdata[,phi_idx]==  1),]
@@ -151,22 +157,22 @@ Explain.bartMachine <- function(object, feature_names = NULL,  X = NULL,
         temp
       }
     }
-    names( phis) <-  featurenames
+    names(phis) <-  featurenames
 
     factor_names <- NULL
     
-    if ( sum( tmp_var$n >=2) >= 1  ){
+    if (sum(tmp_var$n >=2) >= 1 ){
       
-      names( phis) <- names(temp_new)
-      factor_names <-  names(temp_new ) [which((names(temp_new )%in% names(X) ) ==FALSE)]
+      names(phis) <- names(temp_new)
+      factor_names <-  names(temp_new) [which((names(temp_new)%in% names(X)) ==FALSE)]
 
     } 
-    }else if ( sum(sapply(newdata, is.factor)) == 0 ){
+    }else if (sum(sapply(newdata, is.factor)) == 0 ){
     phis <- phis_temp
     factor_names <- NULL
   }
 
-  out <- list (phis = phis, newdata = temp_new,   fnull =  fnull,  fx = fx, factor_names = factor_names)
+  out <- list (phis = phis, newdata = temp_new, fnull = fnull, fx = fx, factor_names = factor_names)
 
   class(out) <- "ExplainbartMachine"
   return (out)

@@ -1,4 +1,4 @@
-#' Approximate Shapley values
+#' Approximate Shapley Values
 #' 
 #' Compute fast (approximate) Shapley values for a set of features using the 
 #' Monte Carlo algorithm described in Strumbelj and Igor (2014).
@@ -51,7 +51,8 @@
 #' 
 #' @param exact Logical indicating whether to compute exact Shapley values. 
 #' Currently only available for \code{stats::lm()}(\url{https://CRAN.R-project.org/package=STAT}), 
-#' \code{xgboost::xgboost()}(\url{https://CRAN.R-project.org/package=xgboost}), and \code{lightgbm::lightgbm()}(\url{https://CRAN.R-project.org/package=lightgbm}) objects. 
+#' \code{xgboost::xgboost()} (\url{https://CRAN.R-project.org/package=xgboost}), 
+#' and \code{lightgbm::lightgbm()}(\url{https://CRAN.R-project.org/package=lightgbm}) objects. 
 #' Default is \code{FALSE}. Note that setting \code{exact = TRUE} will return 
 #' explanations for each of the \code{stats::terms()} in an 
 #'\code{stats::lm()} object. Default is \code{FALSE}.
@@ -132,6 +133,12 @@ Explain.default  <- function(object, feature_names = NULL, X = NULL,
                              newdata = NULL, parallel = FALSE,...) {
 
   i <- 0;
+  
+  if (missing(object)) {
+    message("The object argument is missing a model input. Please provide a model to compute the Shapley values.") 
+    return(invisible(NULL))  
+  }
+  
   # Compute baseline/average training prediction (fnull) and predictions
   # associated with each explanation (fx); if `adjust = FALSE`, then the
   # baseline is not needed and defaults to zero.
@@ -172,10 +179,10 @@ Explain.default  <- function(object, feature_names = NULL, X = NULL,
   `%.do%` <- if (isTRUE(parallel)) `%dopar%` else `%do%`
 
    # decoded data ----------------- # mltools: one_hot
-   temp_new <- label_data  ( newdata) $  decoded_data
-   temp_X <- label_data  ( X )$  decoded_data
+   temp_new <- label_data(newdata)$decoded_data
+   temp_X <- label_data(X)$decoded_data
 
-   temp_feature <- names( temp_X )
+   temp_feature <- names(temp_X)
    
    if( inherits(object,"xgb.Booster")) {
      temp_new <- as.matrix(temp_new) 
@@ -183,27 +190,27 @@ Explain.default  <- function(object, feature_names = NULL, X = NULL,
    }  
 
   # Compute approximate Shapley values # ,  ...
-   phis_temp <- foreach(i = temp_feature ) %.do% {
+   phis_temp <- foreach(i = temp_feature) %.do% {
     replicate(nsim, {  # replace later with vapply()
       Explain_column_default (object, X = temp_X , column = i,
                               pred_wrapper = pred_wrapper, newdata =  temp_new)
     })
     # number of post by obs = n matrix , list = number of variable
   }
-  names( phis_temp) <- temp_feature
+  names(phis_temp) <- temp_feature
 
 
-  tmp_var <- label_data  ( newdata) $ factor_check
+  tmp_var <- label_data(newdata)$factor_check
 
   idx <- NULL
-  if ( sum (tmp_var $ n >= 2) > 1 ){
+  if ( sum (tmp_var$n >= 2) > 1 ){
 
-  for (j in  unique(  tmp_var$var_tmp [  tmp_var $ uniq_len ==2 &   tmp_var $ n >=2]) ){
-    idx <- c(idx ,which(stringr::str_detect( feature_names, paste0("^", j) )))
+  for (j in unique(tmp_var$var_tmp [tmp_var$uniq_len ==2 &  tmp_var$n >=2]) ){
+    idx <- c(idx ,which(stringr::str_detect(feature_names, paste0("^", j))))
   }
  }
 
-  phis  <-  foreach(i = 1:length( feature_names ) ) %.do% {
+  phis  <-  foreach(i = 1:length(feature_names)) %.do% {
 
     temp <- matrix (0, nrow = dim (newdata)[1], ncol = nsim )
 
@@ -214,14 +221,13 @@ Explain.default  <- function(object, feature_names = NULL, X = NULL,
 
     } else {
       temp <-  phis_temp[[feature_names[i]]]
-
     }
 
   }
-  names( phis) <-  feature_names
+  names(phis) <-  feature_names
 
   factor_names <- NULL
-  factor_names <- names(X) [which((names(X) %in% names( temp_new)) ==FALSE)]
+  factor_names <- names(X) [which((names(X) %in% names(temp_new))==FALSE)]
 
   out <- list (phis = phis, newdata = newdata,  fnull =  fnull, fx = fx, factor_names = factor_names )
 

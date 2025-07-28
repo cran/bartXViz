@@ -1,4 +1,4 @@
-#' Approximate Shapley values computed from a BART model fitted using \code{wbart} or \code{gbart}
+#' Approximate Shapley Values Computed from a BART Model Fitted using \code{wbart} or \code{gbart}
 #'
 #' \code{Explain.wbart} function is used to calculate the contribution of each variable
 #' in the Bayesian Additive Regression Trees (BART) model using permutation. 
@@ -31,27 +31,33 @@
 #' \donttest{
 #' ## Friedman data
 #' set.seed(2025)
-#' n = 200
-#' p = 5
-#' X = data.frame(matrix(runif(n * p), ncol = p))
-#' y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+#' n <- 200
+#' p <- 5
+#' X <- data.frame(matrix(runif(n * p), ncol = p))
+#' y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 #' 
-#' ## Using the BART library
-#' model = BART::wbart(X,y,ndpost=200)
+#' ## Using the BART 
+#' model <- BART::wbart(X,y,ndpost=200)
 #' ## prediction wrapper function
 #' pfun <- function(object, newdata) {
 #'        predict(object , newdata)
 #'        }
 #'        
 #'## Calculate shapley values
-#'model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+#'model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 #'}
 
 Explain.wbart <- function(object, feature_names = NULL, X = NULL, nsim = 1,
                           pred_wrapper = NULL,  newdata = NULL, parallel = FALSE, ...) {
 
   # Only nsim = 1
-  i<-0; n<-0;
+  i<-0; n<-0
+  
+  if (missing(object)) {
+    message("The object argument is missing a model input. Please provide a model to compute the Shapley values.") 
+    return(invisible(NULL))  
+  }
+  
   if (nsim > 1) stop ("It stops because nsim > 1.",
                       "Because the BART model uses posterior samples,",
                       "it is used by setting nsim=1.", call. = FALSE)
@@ -77,7 +83,7 @@ Explain.wbart <- function(object, feature_names = NULL, X = NULL, nsim = 1,
   temp_new <-  as.data.frame(bartModelMatrix (newdata))
   fx <-  colMeans(predict(object, newdata =  temp_new))
   # baseline value (i.e., avg training prediction)
-  fnull <-  mean(object $ yhat.train.mean)
+  fnull <-  mean(object$yhat.train.mean)
 
 
   # Deal with other NULL arguments
@@ -96,7 +102,7 @@ Explain.wbart <- function(object, feature_names = NULL, X = NULL, nsim = 1,
   }
   names( phis_temp ) <- feature_names
 
-  featurenames <- names(  temp_new )
+  featurenames <- names(temp_new)
   
   
   tmp_var <- data.frame(tmp_var = feature_names) %>%
@@ -105,13 +111,13 @@ Explain.wbart <- function(object, feature_names = NULL, X = NULL, nsim = 1,
     dplyr::ungroup()
   
 
-  if (( sum(sapply(newdata, is.factor)) > 0 | sum(sapply(newdata, is.character)) > 0) &
-      length(which(stringr::str_detect( featurenames, '[0-9]$' ))) >= 2  ) {
+  if ((sum(sapply(newdata, is.factor)) > 0 | sum(sapply(newdata, is.character)) > 0) &
+      length(which(stringr::str_detect(featurenames, '[0-9]$'))) >= 2) {
 
 
     idx <- NULL
     for (j in tmp_var$tmp_var[tmp_var$n == 2]){
-     idx <- c(idx,max(which(stringr::str_detect( featurenames, paste0("^", j) ))))
+     idx <- c(idx,max(which(stringr::str_detect(featurenames, paste0("^", j)))))
     }
 
     if(is.null(idx)==FALSE){
@@ -170,12 +176,12 @@ Explain.wbart <- function(object, feature_names = NULL, X = NULL, nsim = 1,
     
     
     idx <- NULL
-    for (j in  tmp_newdata$ tmp_newdata[ tmp_newdata$n == 2]){
+    for (j in  tmp_newdata$tmp_newdata[ tmp_newdata$n == 2]){
       idx <- c(idx,max(which(str_detect( names(newdata), paste0("^", j) ))))
     }
 
     names(newdata)[idx] <-  stringr::str_replace (names(newdata)[idx], '[:digit:]',"")
-    newdata <-  newdata [,c(tmp_newdata$ tmp_newdata[ tmp_newdata$n != 2], names(newdata)[idx])]
+    newdata <-  newdata [,c(tmp_newdata$tmp_newdata[ tmp_newdata$n != 2], names(newdata)[idx])]
 
   }
   }   else if ( sum(sapply(newdata, is.factor)) == 0 ){

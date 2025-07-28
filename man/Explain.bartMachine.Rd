@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain_bartMachine.R
 \name{Explain.bartMachine}
 \alias{Explain.bartMachine}
-\title{Approximate Shapley values computed from a BART model fitted using \code{bartMachine}}
+\title{Approximate Shapley Values Computed from a BART Model Fitted using \code{bartMachine}}
 \usage{
 \method{Explain}{bartMachine}(
   object,
@@ -56,13 +56,13 @@ using the \code{bartMachine} function from the \pkg{bartMachine}.
 \donttest{
 ## Friedman data
 set.seed(2025)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+n <- 200
+p <- 5
+X <- data.frame(matrix(runif(n * p), ncol = p))
+y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 
-##  Using the bartMachine library 
-model = bartMachine::bartMachine(X,y, seed = 2025, num_iterations_after_burn_in =200 )
+##  Using the bartMachine 
+model <- bartMachine::bartMachine(X, y, seed = 2025, num_iterations_after_burn_in =200 )
 
 ## prediction wrapper function
 pfun <- function (object, newdata) {
@@ -70,6 +70,6 @@ pfun <- function (object, newdata) {
   }
   
 ## Calculate shapley values
-model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+model_exp <-  Explain  ( model, X = X,  pred_wrapper =  pfun )
 }
 }

@@ -1,4 +1,4 @@
-#' A function for visualizing the Shapley values of BART models
+#' A Function for Visualizing the Shapley Values of BART Models
 #'
 #' The \code{plot.ExplainbartMachine} function provides various visualization methods for Shapley values. 
 #' It is designed to visualize \code{ExplainbartMachine} class objects, which contain Shapley values computed from models estimated using the \code{bartMachine} function from the \pkg{bartMachine}.
@@ -9,6 +9,7 @@
 #' \code{"obs"} represents abind the average based on observations (#post by #variable),
 #' while \code{"post"} represents the average based on posterior samples (#obs by #variable).
 #' If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.
+#' If no value is specified, "both" is used as the default.
 #' @param title The title of the plot, with a default value of \code{NULL}.
 #' @param type \code{"bar"} represents a bar chart that includes the average contribution of each variable,
 #'  while \code{"bee"} represents a summary plot, allowing you to determine the graph's format.
@@ -28,6 +29,13 @@
 plot.ExplainbartMachine <- function(x, average = NULL, type = NULL,  num_post= NULL,
 plot.flag=TRUE, adjust= FALSE,  probs=0.95, title=NULL,...){
 
+  if (!inherits(x, "ExplainbartMachine") ) {
+    message("The input object must be of class 'ExplainbartMachine'.")
+    return(invisible(NULL))
+  } else if (missing(x) ) {
+    stop("The object containing the Shapley values of models obtained from the 'Explain' function is missing.")
+    return(invisible(NULL))
+  }
   
     plot.ExplainBART (x= x, average=average , type = type,
                       adjust =  adjust, num_post =  num_post,

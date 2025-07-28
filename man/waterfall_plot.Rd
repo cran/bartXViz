@@ -2,11 +2,11 @@
 % Please edit documentation in R/waterfall_plot.R
 \name{waterfall_plot}
 \alias{waterfall_plot}
-\title{Waterfall plot}
+\title{Waterfall Plot}
 \usage{
 waterfall_plot(
   object,
-  obs_num,
+  obs_num = NULL,
   title = NULL,
   geo.unit = NULL,
   geo.id = NULL,
@@ -40,13 +40,13 @@ variable's contributions change for a single observation.
 \donttest{
 ## Friedman data
 set.seed(2025)
-n = 200
-p = 5
-X = data.frame(matrix(runif(n * p), ncol = p))
-y = 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
+n <- 200
+p <- 5
+X <- data.frame(matrix(runif(n * p), ncol = p))
+y <- 10 * sin(pi* X[ ,1] * X[,2]) +20 * (X[,3] -.5)^2 + 10 * X[ ,4] + 5 * X[,5] + rnorm(n)
 
-## Using dbarts library
-model = dbarts::bart (X,y,  keeptrees = TRUE,ndpost = 200)
+## Using dbarts 
+model <- dbarts::bart (X, y, keeptrees = TRUE, ndpost = 200)
 
 # prediction wrapper function
 pfun <- function (object, newdata) {
@@ -54,7 +54,7 @@ pfun <- function (object, newdata) {
  }
  
 # Calculate shapley values
-model_exp =  Explain  ( model, X = X,  pred_wrapper =  pfun )
+model_exp <-  Explain(model, X = X, pred_wrapper=pfun)
 
 # Waterfall plot of 100th observation
 waterfall_plot(model_exp, obs_num=100) 

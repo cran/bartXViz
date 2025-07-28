@@ -56,7 +56,7 @@ bar_plot <- function (object, probs, plot.flag,title, ...) {
 
 
 
-  if(  plot.flag ){
+  if(plot.flag){
 
     plot_bar <- ggplot( object_summary, aes(x = reorder(names, +mean), y = mean) ) +
       geom_bar( stat = "identity" ,fill="grey80")  +
@@ -93,20 +93,19 @@ long_data <- function(data, normalize , absolute ) {
   ID <- variable <- value <- 0;
   if (isTRUE(absolute)) {
     data_list <- list(raw_data = data.frame(data),
-                      mean_data = colMeans(abs(data),na.rm = TRUE)[order(colMeans(abs(data),na.rm = TRUE), decreasing = TRUE)])
+                      mean_data = colMeans(abs(data), na.rm = TRUE)[order(colMeans(abs(data),na.rm = TRUE), decreasing = TRUE)])
   } else if (isFALSE(absolute)) {
 
     data_list <- list(raw_data = data.frame(data),
-                      mean_data = as.data.frame(colMeans(abs(data),na.rm = TRUE )[order(colMeans(abs(data) ,na.rm = TRUE))]))
+                      mean_data = as.data.frame(colMeans(abs(data),na.rm = TRUE )[order(colMeans(abs(data), na.rm = TRUE))]))
 
-    names ( data_list $ mean_data ) <- "mean"
-    data_list $ mean_data $ variable <-   rownames (data_list $ mean_data)
-    data_list $ mean_data$ rank <- seq_len(nrow(data_list $ mean_data))
+    names ( data_list$mean_data ) <- "mean"
+    data_list$mean_data$variable <- rownames (data_list$mean_data)
+    data_list$mean_data$rank <- seq_len(nrow(data_list$mean_data))
 
   }
 
-
-  names ( data_list $ raw_data) <- colnames (data)
+  names ( data_list$raw_data) <- colnames (data)
   dt  <- setDT(data_list$raw_data)[, names(data_list$raw_data)[1:dim(data_list$raw_data)[2]], with = FALSE]
   dt [, ID:= .I]
 
@@ -117,8 +116,7 @@ long_data <- function(data, normalize , absolute ) {
     dt_long  <- dt_long  %>% group_by(variable) %>% mutate (normalize = min_max_normalization(value))
   }
 
-
-  out <- list (long = dt_long, mean = data_list $ mean_data)
+  out <- list (long = dt_long, mean = data_list$mean_data)
   return(out)
 }
 
@@ -135,7 +133,7 @@ min_max_normalization <- function(x) {
 summary_plot <- function (object,title,...) {
   value <- variable <- normalize <- 0;
   plot_summary <- object$long %>% filter(is.na(value)==FALSE) %>%
-     ggplot( aes(variable, value)) +
+     ggplot(aes(variable, value)) +
     geom_sina(aes(color= normalize*12),
                        method = "counts", maxwidth = 0.7  ) +
     scale_x_discrete(limits = rev(names (object$mean)),
@@ -150,9 +148,7 @@ summary_plot <- function (object,title,...) {
   if(!is.null(title)) {
     plot_summary  <- plot_summary  + ggtitle(title)
   }
-
   plot_summary
-
 }
 
 
@@ -165,16 +161,16 @@ label_data <- function(data) {
   for (i in  names(data) ) {
     temp <- unlist  (strsplit(i, split =  "_" ) )
     var_tmp <-  c( var_tmp, temp[1] )
-    uniq_len <- c( uniq_len, length (unique( data [,i])))
+    uniq_len <- c( uniq_len, length(unique(data[,i])))
     factor_value <- c(factor_value,temp[length(temp)] )
   }
 
   factor_check  <-  data.frame(varname =  names(data),
                               var_tmp = var_tmp, uniq_len=uniq_len,
                               factor_value = factor_value)
-  factor_check  <-  factor_check %>% group_by(var_tmp) %>%   dplyr::add_count(var_tmp, name = "n") 
+  factor_check  <-  factor_check %>% group_by(var_tmp) %>% dplyr::add_count(var_tmp, name = "n") 
 
-  fac <- unique(factor_check$var_tmp [factor_check $ uniq_len ==2 & factor_check $ n >=2])
+  fac <- unique(factor_check$var_tmp [factor_check$uniq_len ==2 & factor_check$n >=2])
 
   decoded_data <- data
   for (i in fac){

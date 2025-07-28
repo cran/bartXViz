@@ -2,7 +2,7 @@
 % Please edit documentation in R/BARP_barp.R
 \name{barps}
 \alias{barps}
-\title{Bayesian Additive Regression Trees with Post-stratification (BARP)}
+\title{Bayesian Additive Regression Trees with Post-Stratification (BARP)}
 \source{
 https://github.com/jbisbee1/BARP
 }
@@ -48,7 +48,7 @@ barps(
 \item{...}{Additional arguments to be passed to bartMachine or SuperLearner.}
 }
 \value{
-Returns an object of class `BARP`, containing a list of the following components:
+Returns an object of class \code{BARP}, containing a list of the following components:
 \item{pred.opn}{A \code{data.frame} where each row corresponds to the geographic unit of interest and the columns summarize the predicted outcome and the upper and lower bounds for the given credible interval (\code{cred_int}).}
 \item{trees}{A \code{bartMachine} object.} 
 \item{risk}{A \code{data.frame} containing the cross-validation risk for each algorithm and the associated weight used in the ensemble predictions. Only useful when multiple algorithms are used.}

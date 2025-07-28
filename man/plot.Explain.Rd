@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_default.R
 \name{plot.Explain}
 \alias{plot.Explain}
-\title{A function for visualizing the Shapley values}
+\title{A Function for Visualizing the Shapley Values}
 \usage{
 \method{plot}{Explain}(
   x,
@@ -22,7 +22,8 @@
 \item{average}{Input the reference value for calculating the mean of the object's \code{phi} list.
 \code{"obs"} represents the average based on observations (#post by #variable),
 while \code{"post"} represents the average based on posterior samples (#obs by #variable).
-If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.}
+If \code{"both"} is entered, calculations are performed based on both observation and posterior sample criteria.
+If no value is specified, "both" is used as the default.}
 
 \item{type}{\code{"bar"} represents a bar chart that includes the average contribution of each variable,
 while \code{"bee"} represents a summary plot, allowing you to determine the graph's format.}

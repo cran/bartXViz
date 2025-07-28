@@ -24,7 +24,7 @@ pre_process_training_data <- function(data, use_missing_data_dummies_as_covars =
 		#append them to the data
 		data <- cbind(data, dummied)
 		#delete the factor covariate from the design matrix
-		data[, fac] = NULL
+		data[, fac] <- NULL
 		#record the length of this factor
 		factor_lengths <- c(factor_lengths, ncol(dummied))
 	}

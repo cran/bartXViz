@@ -2,7 +2,7 @@
 \alias{census06}
 \docType{data}
 \title{
-Census-based Population Proportions for Covariate Bins (2006)
+Census-Based Population Proportions for Covariate Bins (2006)
 }
 \description{
 The data frame has the following components:
@@ -27,7 +27,7 @@ A data frame with 2940 rows and 9 variables:
 }
 
 \references{
- Bisbee, James. "Barp: Improving mister p using bayesian additive regression trees." American Political Science Review 113.4 (2019): 1060-1065.
+ Bisbee, James. "Barp: Improving mister p using bayesian additive regression trees." American Political Science Review 113.4 (2019): 1060-1065. <https://github.com/jbisbee1/BARP>
 }
 
 \keyword{datasets}

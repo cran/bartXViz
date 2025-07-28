@@ -2,7 +2,7 @@
 % Please edit documentation in R/explain.barp.R
 \name{Explain.barp}
 \alias{Explain.barp}
-\title{Approximate Shapley values computed from the BARP model}
+\title{Approximate Shapley Values Computed from the BARP Model}
 \usage{
 \method{Explain}{barp}(
   object,

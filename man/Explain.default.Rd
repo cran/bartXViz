@@ -6,7 +6,7 @@
 \alias{Explain.lm}
 \alias{Explain.xgb.Booster}
 \alias{Explain.lgb.Booster}
-\title{Approximate Shapley values}
+\title{Approximate Shapley Values}
 \usage{
 Explain(object, ...)
 
@@ -110,7 +110,8 @@ system-specific) *parallel backend* as described in the
 
 \item{exact}{Logical indicating whether to compute exact Shapley values. 
 Currently only available for \code{stats::lm()}(\url{https://CRAN.R-project.org/package=STAT}), 
-\code{xgboost::xgboost()}(\url{https://CRAN.R-project.org/package=xgboost}), and \code{lightgbm::lightgbm()}(\url{https://CRAN.R-project.org/package=lightgbm}) objects. 
+\code{xgboost::xgboost()} (\url{https://CRAN.R-project.org/package=xgboost}), 
+and \code{lightgbm::lightgbm()}(\url{https://CRAN.R-project.org/package=lightgbm}) objects. 
 Default is \code{FALSE}. Note that setting \code{exact = TRUE} will return 
 explanations for each of the \code{stats::terms()} in an 
 \code{stats::lm()} object. Default is \code{FALSE}.}
